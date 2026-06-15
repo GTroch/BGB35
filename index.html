@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selbstlernkurs: Kaufrecht BGB – LE 1 &amp; 2</title>
+<style>
+  :root {
+    --primary: #1a3a6b;
+    --accent: #c0392b;
+    --correct: #27ae60;
+    --wrong: #e74c3c;
+    --neutral: #f0f4f9;
+    --border: #d0d8e8;
+    --text: #1c1c1e;
+    --muted: #555;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #eef2f7;
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header h1 { font-size: 1.4rem; font-weight: 700; }
+  header p { font-size: 0.85rem; opacity: 0.8; margin-top: 2px; }
+  #progress-bar-container {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    height: 10px;
+    width: 220px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    background: #f9ca24;
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  #progress-label { color: #f9ca24; font-size: 0.8rem; margin-top: 3px; text-align: right; }
+
+  main {
+    max-width: 820px;
+    margin: 32px auto;
+    padding: 0 16px 60px;
+  }
+
+  /* Intro screen */
+  #intro-screen {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  #intro-screen h2 { font-size: 1.6rem; color: var(--primary); margin-bottom: 16px; }
+  #intro-screen p { color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
+  .topic-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0; }
+  .chip {
+    background: var(--neutral);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .btn-start {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: background 0.2s;
+  }
+  .btn-start:hover { background: #2a5298; }
+
+  /* Quiz card */
+  #quiz-screen { display: none; }
+  .question-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .badge.le2 { background: #6c3483; }
+  .question-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .case-box {
+    background: var(--neutral);
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0 20px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    background: var(--neutral);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 13px 18px;
+    cursor: pointer;
+    font-size: 0.93rem;
+    line-height: 1.5;
+    transition: border-color 0.15s, background 0.15s;
+    text-align: left;
+  }
+  .option:hover:not(.disabled) { border-color: var(--primary); background: #e8eef8; }
+  .option.correct { border-color: var(--correct); background: #eafaf1; }
+  .option.wrong { border-color: var(--wrong); background: #fdedec; }
+  .option.disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback {
+    display: none;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .feedback.correct-fb { background: #eafaf1; border: 1px solid #a9dfbf; color: #1e8449; }
+  .feedback.wrong-fb { background: #fdedec; border: 1px solid #f1948a; color: #922b21; }
+
+  /* Nav buttons */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  .btn-nav {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 28px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-nav:hover { background: #2a5298; }
+  .btn-nav:disabled { background: #aab; cursor: default; }
+  .question-counter { color: var(--muted); font-size: 0.85rem; }
+
+  /* Score screen */
+  #score-screen { display: none; }
+  .score-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 44px 40px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .score-card h2 { font-size: 1.7rem; color: var(--primary); margin-bottom: 8px; }
+  .score-big { font-size: 3.5rem; font-weight: 900; color: var(--primary); margin: 16px 0 4px; }
+  .score-sub { color: var(--muted); margin-bottom: 28px; }
+  .grade-badge {
+    display: inline-block;
+    border-radius: 12px;
+    padding: 10px 28px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+  .breakdown {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .bcard {
+    background: var(--neutral);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 24px;
+    min-width: 130px;
+  }
+  .bcard .bnum { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+  .bcard .blabel { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+  .btn-restart {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 36px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 6px;
+    transition: background 0.2s;
+  }
+  .btn-restart:hover { background: #2a5298; }
+  .btn-review {
+    background: #fff;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    padding: 11px 28px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 6px;
+    transition: background 0.2s;
+  }
+  .btn-review:hover { background: var(--neutral); }
+
+  /* Review mode */
+  #review-screen { display: none; }
+  .review-item {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    border-left: 5px solid var(--border);
+  }
+  .review-item.r-correct { border-left-color: var(--correct); }
+  .review-item.r-wrong { border-left-color: var(--wrong); }
+  .review-q { font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+  .review-case { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; background: var(--neutral); padding: 8px 12px; border-radius: 5px; }
+  .review-ans { font-size: 0.85rem; margin-bottom: 4px; }
+  .review-ans span { font-weight: 600; }
+  .review-exp { font-size: 0.82rem; color: #555; background: #f9f9f9; padding: 8px 12px; border-radius: 5px; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Selbstlernkurs Bürgerliches Recht</h1>
+    <p>Kaufrecht · Lerneinheit 1 &amp; 2 · BGB</p>
+  </div>
+  <div>
+    <div id="progress-bar-container"><div id="progress-bar"></div></div>
+    <div id="progress-label">0 / 35 Fragen</div>
+  </div>
+</header>
+
+<main>
+  <!-- Intro -->
+  <div id="intro-screen">
+    <h2>Willkommen zum Selbstlernkurs</h2>
+    <p>Dieser Kurs testet Ihr Wissen zu den kaufrechtlichen Gewährleistungsregeln des BGB anhand von Fallbeispielen.</p>
+    <div class="topic-chips">
+      <span class="chip">§ 433 BGB – Kaufvertrag</span>
+      <span class="chip">§ 434 BGB – Sachmangel</span>
+      <span class="chip">§ 435 BGB – Rechtsmangel</span>
+      <span class="chip">§§ 474 ff. – Verbrauchsgüterkauf</span>
+      <span class="chip">§ 477 BGB – Beweislastumkehr</span>
+      <span class="chip">§§ 437, 439 BGB – Nacherfüllung</span>
+      <span class="chip">§§ 437 Nr. 2, 441 BGB – Minderung</span>
+      <span class="chip">§§ 446, 447 BGB – Gefahrübergang</span>
+      <span class="chip">§§ 475b ff. – Digitale Elemente</span>
+      <span class="chip">§§ 445a ff. – Verkäuferregress</span>
+      <span class="chip">§ 463 BGB – Vorkaufsrecht</span>
+    </div>
+    <p><strong>35 Multiple-Choice-Fragen</strong> – nach jeder Antwort erhalten Sie eine Erklärung.</p>
+    <button class="btn-start" onclick="startQuiz()">Kurs starten ▶</button>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quiz-screen">
+    <div class="question-card" id="q-card">
+      <div class="badge" id="q-badge">LE 1</div>
+      <div class="question-text" id="q-text"></div>
+      <div class="case-box" id="q-case" style="display:none"></div>
+      <div class="options" id="q-options"></div>
+      <div class="feedback" id="q-feedback"></div>
+    </div>
+    <div class="nav-row">
+      <span class="question-counter" id="q-counter">Frage 1 von 35</span>
+      <button class="btn-nav" id="btn-next" onclick="nextQuestion()" disabled>Weiter →</button>
+    </div>
+  </div>
+
+  <!-- Score -->
+  <div id="score-screen">
+    <div class="score-card">
+      <h2>Auswertung</h2>
+      <div class="score-big" id="score-display">0 / 35</div>
+      <div class="score-sub" id="score-pct"></div>
+      <div class="grade-badge" id="grade-badge"></div>
+      <div class="breakdown">
+        <div class="bcard"><div class="bnum" id="s-correct">0</div><div class="blabel">Richtig</div></div>
+        <div class="bcard"><div class="bnum" id="s-wrong">0</div><div class="blabel">Falsch</div></div>
+        <div class="bcard"><div class="bnum" id="s-le1">0/18</div><div class="blabel">LE 1 (von 18)</div></div>
+        <div class="bcard"><div class="bnum" id="s-le2">0/17</div><div class="blabel">LE 2 (von 17)</div></div>
+      </div>
+      <div>
+        <button class="btn-review" onclick="showReview()">Antworten überprüfen</button>
+        <button class="btn-restart" onclick="restartQuiz()">Nochmal versuchen ↺</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review -->
+  <div id="review-screen">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="color:var(--primary)">Überprüfung aller Antworten</h2>
+      <button class="btn-restart" onclick="restartQuiz()">Nochmal starten</button>
+    </div>
+    <div id="review-list"></div>
+  </div>
+</main>
+
+<script>
+const questions = [
+  // ===== LERNEINHEIT 1 =====
+  {
+    le: 1,
+    question: "Was sind die Pflichten des Verkäufers aus einem Kaufvertrag nach § 433 BGB?",
+    options: [
+      "Übergabe und Eigentumsverschaffung; die Sache muss frei von Mängeln sein",
+      "Nur Übergabe der Sache; Mängelfreiheit ist keine Pflicht",
+      "Übergabe und Bezahlung des Kaufpreises",
+      "Lediglich Verschaffung von Besitz an der Sache"
+    ],
+    correct: 0,
+    explanation: "Nach § 433 I BGB schuldet der Verkäufer Übergabe und Eigentumsverschaffung, nach § 433 I S. 2 BGB muss die Sache frei von Sach- und Rechtsmängeln sein. Die Zahlung des Kaufpreises ist hingegen Pflicht des Käufers (§ 433 II BGB)."
+  },
+  {
+    le: 1,
+    question: "Was schuldet der Käufer nach § 433 II BGB?",
+    options: [
+      "Nur Zahlung des Kaufpreises",
+      "Zahlung des Kaufpreises und Abnahme der Sache",
+      "Nur Abnahme der Sache",
+      "Übergabe und Eigentumsverschaffung"
+    ],
+    correct: 1,
+    explanation: "Der Käufer schuldet nach § 433 II BGB sowohl die Zahlung des Kaufpreises als auch die Abnahme der Sache. Nimmt er die Ware nicht an, gerät er nicht nur in Gläubigerverzug (§§ 293 ff. BGB), sondern auch in Schuldnerverzug hinsichtlich der Abnahmepflicht (§§ 280 II, 286 BGB)."
+  },
+  {
+    le: 1,
+    case: "K kauft von Händler V ein gebrauchtes Smartphone. V versichert, das Gerät sei unfallfrei. Später stellt K fest, dass das Display nach einem früheren Sturz repariert wurde und die zugesicherte Eigenschaft fehlt.",
+    question: "Liegt hier ein Sachmangel i.S.d. § 434 BGB vor?",
+    options: [
+      "Nein, weil es sich um ein gebrauchtes Gerät handelt und Abnutzung normal ist",
+      "Ja, weil die vereinbarte Beschaffenheit (Unfallfreiheit) fehlt – subjektiver Anforderung nach § 434 II BGB nicht erfüllt",
+      "Nein, weil ein Sachmangel nur bei Neuwaren möglich ist",
+      "Ja, aber nur wenn V die Reparatur absichtlich verschwiegen hat"
+    ],
+    correct: 1,
+    explanation: "Zu den Sachmängeln nach § 434 II BGB zählt das Fehlen vereinbarter Beschaffenheiten (subjektive Anforderungen). Die zugesicherte Unfallfreiheit ist eine vereinbarte Beschaffenheit; ihr Fehlen stellt unabhängig von Vorsatz einen Sachmangel dar."
+  },
+  {
+    le: 1,
+    case: "K kauft ein neues Fahrrad. Nach drei Monaten löst sich der Lenker, weil er konstruktionsbedingt zu schwach ist. Nichts wurde über die Lenkerqualität vereinbart.",
+    question: "Unter welche Mangelkategorie fällt dieser Defekt?",
+    options: [
+      "Subjektiver Mangel nach § 434 II BGB, weil K eine bestimmte Qualität erwartet hatte",
+      "Objektiver Mangel nach § 434 III BGB, weil das Fahrrad nicht der üblichen Beschaffenheit entspricht",
+      "Montagemangel nach § 434 IV BGB",
+      "Kein Mangel, weil keine Beschaffenheit vereinbart wurde"
+    ],
+    correct: 1,
+    explanation: "Objektive Anforderungen nach § 434 III BGB erfordern, dass die Sache die gewöhnliche Verwendung ermöglicht und eine Beschaffenheit aufweist, die üblich ist und die der Käufer erwarten darf. Ein sich auflösender Lenker erfüllt diese Anforderung nicht."
+  },
+  {
+    le: 1,
+    case: "V verkauft K 10 Ballen Sendai-Seide. Er liefert aber Kawamata-Seide.",
+    question: "Wie behandelt das Gesetz diese sog. aliud-Lieferung?",
+    options: [
+      "Als Nichtleistung nach § 433 I BGB, da die geschuldete Sache nicht geliefert wurde",
+      "Als Sachmangel nach § 434 V BGB",
+      "Als Rechtsmangel nach § 435 BGB",
+      "Gar nicht – der Käufer muss die Lieferung akzeptieren"
+    ],
+    correct: 1,
+    explanation: "§ 434 V BGB unterstellt auch die Lieferung einer anderen Sache (aliud) dem Sachmängelgewährleistungsrecht. Obwohl es sich eigentlich um eine „andere Sache” handelt, gilt die aliud-Lieferung als Sachmangel."
+  },
+  {
+    le: 1,
+    case: "V verkauft dem K ein Grundstück mit Haus. Kurz zuvor hatte er das Haus vermietet, was er dem K verschweigt.",
+    question: "Welche Art von Mangel liegt vor?",
+    options: [
+      "Sachmangel nach § 434 BGB, weil das Haus durch den Mieter in schlechtem Zustand ist",
+      "Rechtsmangel nach § 435 BGB, weil K durch § 566 BGB in die Vermieterpflichten eintritt",
+      "Kein Mangel, weil das Haus voll funktionsfähig übergeben wurde",
+      "Montagemangel nach § 434 IV BGB"
+    ],
+    correct: 1,
+    explanation: "Ein Rechtsmangel nach § 435 BGB liegt vor, wenn Dritte in Bezug auf die Sache Rechte geltend machen können. Durch § 566 BGB (Kauf bricht nicht Miete) tritt der Käufer in das Mietverhältnis ein – dies begründet einen Rechtsmangel."
+  },
+  {
+    le: 1,
+    case: "K kauft von Händler V (Unternehmer) ein Notebook für private Zwecke. Nach 8 Monaten erscheint häufig der Bluescreen.",
+    question: "Welche Vorschrift kommt bezüglich der Beweislast zugute?",
+    options: [
+      "§ 476 BGB – Abweichungsverbot beim Verbrauchsgüterkauf",
+      "§ 477 BGB – Beweislastumkehr zugunsten des Verbrauchers",
+      "§ 442 BGB – Kenntnis des Käufers vom Mangel",
+      "§ 438 BGB – Verjährung der Gewährleistungsansprüche"
+    ],
+    correct: 1,
+    explanation: "§ 477 BGB begründet beim Verbrauchsgüterkauf eine Beweislastumkehr: Zeigt sich innerhalb eines Jahres nach Gefahrübergang ein Mangel, wird vermutet, dass er schon bei Gefahrübergang vorgelegen hat. Der Unternehmer muss diese Vermutung widerlegen."
+  },
+  {
+    le: 1,
+    case: "K (Verbraucher) kauft bei V (Unternehmer) eine Waschmaschine. Ein Defekt zeigt sich 9 Monate nach Übergabe. Ob der Mangel schon bei Übergabe bestand, ist unklar.",
+    question: "Was folgt aus § 477 BGB?",
+    options: [
+      "K muss beweisen, dass der Mangel schon bei Übergabe bestand",
+      "Es wird vermutet, dass der Mangel schon bei Gefahrübergang bestand; V muss die Vermutung widerlegen",
+      "Nach mehr als 6 Monaten gilt keine Vermutung mehr",
+      "Die Beweislast liegt beim Gericht, nicht bei den Parteien"
+    ],
+    correct: 1,
+    explanation: "§ 477 I BGB begründet eine gesetzliche Vermutung zugunsten des Verbrauchers: Tritt ein Mangel innerhalb eines Jahres auf, gilt er als schon bei Gefahrübergang vorhanden. Der Unternehmer muss beweisen, dass die Sache bei Übergabe mangelfrei war."
+  },
+  {
+    le: 1,
+    question: "Welche vier Rechte stehen dem Käufer nach § 437 BGB bei Mängeln zu?",
+    options: [
+      "Rücktritt, Minderung, Schadensersatz, Vertragsanpassung",
+      "Nacherfüllung, Rücktritt, Minderung, Schadensersatz/Aufwendungsersatz",
+      "Nachbesserung, Rücktritt, Preiserlass, Gewährleistung",
+      "Garantie, Rücktritt, Schadensersatz, Ersatzlieferung"
+    ],
+    correct: 1,
+    explanation: "§ 437 BGB listet als Käuferrechte auf: (1) Nacherfüllung (§ 439 BGB), (2) Rücktritt (§§ 440, 323, 326 V BGB), (3) Minderung (§ 441 BGB), (4) Schadensersatz bzw. Aufwendungsersatz (§§ 280 ff., 311a BGB). § 437 BGB ist eine reine Katalognorm – Anspruchsnormen sind die verwiesenen Paragraphen."
+  },
+  {
+    le: 1,
+    case: "K verlangt von Verkäufer V Nacherfüllung wegen eines Mangels an seinem Pkw.",
+    question: "Welche zwei Varianten der Nacherfüllung kann K nach § 439 I BGB wählen?",
+    options: [
+      "Rücktritt oder Preisminderung",
+      "Nachbesserung oder Lieferung einer mangelfreien Sache",
+      "Schadensersatz oder Aufwendungsersatz",
+      "Neulieferung oder Vertragsaufhebung"
+    ],
+    correct: 1,
+    explanation: "§ 439 I BGB räumt dem Käufer das Wahlrecht ein zwischen Nachbesserung (Reparatur der mangelhaften Sache) und Lieferung einer mangelfreien Ersatzsache. Der Käufer kann zwischen diesen Varianten wählen; der Verkäufer kann nur unter engen Voraussetzungen (§ 439 IV BGB) ablehnen."
+  },
+  {
+    le: 1,
+    case: "K kauft von V ein gebrauchtes Auto, das sich als Unfallwagen herausstellt. Eine Reparatur kann den Unfallstatus nicht beheben.",
+    question: "Muss K dem V vor Rücktritt eine Frist zur Nacherfüllung setzen?",
+    options: [
+      "Ja, immer – ohne Fristsetzung kein Rücktritt",
+      "Nein, weil die Nacherfüllung unmöglich ist (§ 326 V BGB) – eine Reparatur kann aus einem Unfallwagen keinen unfallfreien machen",
+      "Nur bei Gebrauchtwagen ist eine Frist entbehrlich",
+      "Ja, aber die Frist beträgt nur 24 Stunden"
+    ],
+    correct: 1,
+    explanation: "Ist die Nacherfüllung unmöglich – aus einem Unfallwagen kann keine noch so gute Reparatur einen unfallfreien Wagen machen –, entfällt nach § 326 V BGB die Pflicht zur Fristsetzung. K kann sofort zurücktreten (§§ 437 Nr. 2, 326 V, 346 BGB)."
+  },
+  {
+    le: 1,
+    case: "K kauft Parkettstäbe und verlegt sie selbst. Wegen eines Konstruktionsfehlers – weder K noch V erkennbar – löst sich die Deckschicht. K möchte, dass V für Aus- und Einbaukosten aufkommt.",
+    question: "Hat K diesen Anspruch?",
+    options: [
+      "Nein, Ein- und Ausbau gehören nicht zu den Verkäuferpflichten",
+      "Ja – § 439 III BGB verpflichtet den Verkäufer, die Aufwendungen für Aus- und Einbau der mangelhaften Sache zu tragen",
+      "Ja, aber nur wenn K Verbraucher ist",
+      "Nein, weil K die Parkettstäbe selbst verlegt hat und das Risiko trägt"
+    ],
+    correct: 1,
+    explanation: "§ 439 III BGB verpflichtet den Verkäufer zur Erstattung der Aus- und Einbaukosten – unabhängig davon, ob Käufer Verbraucher oder Unternehmer ist. Der Anspruch richtet sich auf die Kosten, nicht auf die Durchführung durch den Verkäufer."
+  },
+  {
+    le: 1,
+    case: "K hat sein Auto eigenmächtig reparieren lassen, ohne V eine Gelegenheit zur Nacherfüllung zu geben.",
+    question: "Kann K von V Erstattung der Reparaturkosten verlangen?",
+    options: [
+      "Ja, aus § 439 II BGB, weil der Verkäufer die Kosten der Nacherfüllung trägt",
+      "Nein – durch die eigenmächtige Selbstvornahme verletzt K das Recht des V zur zweiten Andienung; alle in Betracht kommenden Ansprüche scheitern",
+      "Ja, aus § 812 BGB (ungerechtfertigte Bereicherung)",
+      "Ja, weil V durch die Reparatur Aufwendungen erspart hat (§ 326 II S. 2 BGB analog)"
+    ],
+    correct: 1,
+    explanation: "Bei eigenmächtiger Selbstvornahme ohne Fristsetzung hat der Käufer grundsätzlich keinen Anspruch auf Ersatz der Reparaturkosten, weil er das Recht des Verkäufers zur zweiten Andienung verletzt. § 439 II BGB meint nur die Reparatur durch den Verkäufer selbst; §§ 280, 326 II S. 2 BGB analog und § 812 BGB scheitern an der Umgehung kaufrechtlicher Wertungen."
+  },
+  {
+    le: 1,
+    question: "Welche Anforderungen stellt § 476 I 2 BGB beim Verbrauchsgüterkauf, wenn von den objektiven Anforderungen des § 434 III BGB abgewichen werden soll?",
+    options: [
+      "Es reicht eine mündliche Absprache zwischen den Parteien",
+      "Der Verbraucher muss eigens über die Abweichung informiert werden und diese muss ausdrücklich und gesondert vereinbart werden",
+      "Eine AGB-Klausel genügt",
+      "Keine besonderen Anforderungen, Privatautonomie gilt uneingeschränkt"
+    ],
+    correct: 1,
+    explanation: "§ 476 I 2 BGB verlangt beim Verbrauchsgüterkauf, dass der Verbraucher über die Abweichung von objektiven Anforderungen eigens in Kenntnis gesetzt wird und die Abweichung ausdrücklich und gesondert vereinbart wird. Ein Verstecken in einer Produktbeschreibung oder AGB genügt nicht."
+  },
+  {
+    le: 1,
+    case: "V verkauft ein Fahrrad an K. Im Kaufvertrag ist die Rede von einem 'Thermomixer mit App-Anbindung'. Die App ist gesondert nutzbar; der Thermomixer funktioniert auch ohne App.",
+    question: "Welches Gewährleistungsrecht gilt für Mängel der App?",
+    options: [
+      "§§ 434 ff. BGB (normales Kaufrecht), weil ein Kaufvertrag vorliegt",
+      "§§ 475b ff. BGB, weil es sich um eine Ware mit digitalem Element handelt",
+      "§§ 327a ff. BGB (Vertragsrecht über digitale Produkte), weil keine qualifizierte Verbindung zwischen Ware und digitalem Produkt besteht",
+      "§§ 631 ff. BGB (Werkvertragsrecht)"
+    ],
+    correct: 2,
+    explanation: "Fehlt eine 'qualifizierte Verbindung' (die Ware kann auch ohne das digitale Element funktionieren), gilt für das digitale Produkt das Recht der §§ 327a ff. BGB über Verträge über digitale Produkte (§ 475a II BGB). Für den Thermomixer selbst gelten die §§ 434 ff. BGB."
+  },
+  {
+    le: 1,
+    case: "K kauft ein Smartphone. Ohne das vorinstallierte Betriebssystem ist das Gerät unbrauchbar.",
+    question: "Welches Gewährleistungsrecht ist anwendbar?",
+    options: [
+      "§§ 434 ff. BGB (normales Kaufrecht)",
+      "§§ 475b ff. BGB, weil es sich um eine Ware mit digitalem Element handelt, ohne das die Ware nicht funktioniert",
+      "§§ 327 ff. BGB, weil ein digitaler Inhalt vorliegt",
+      "Kein besonderes Gewährleistungsrecht, da Smartphones pauschal nicht geregelt sind"
+    ],
+    correct: 1,
+    explanation: "Ein Kaufvertrag über eine Ware mit digitalen Elementen liegt nach § 475b I BGB vor, wenn die digitalen Produkte so mit der Ware verbunden sind, dass sie ohne diese nicht funktionieren kann. Beim Smartphone ist das Betriebssystem untrennbar damit verbunden → §§ 475b ff. BGB."
+  },
+  {
+    le: 1,
+    question: "Welche Verjährungsfrist gilt für Mängelgewährleistungsansprüche beim Kauf gemäß § 438 BGB?",
+    options: [
+      "3 Jahre (allgemeine Regelverjährung nach § 195 BGB)",
+      "Regelmäßig 2 Jahre, beginnend mit Ablieferung der Sache",
+      "1 Jahr ab Kenntnis des Mangels",
+      "5 Jahre bei Bauwerken und beweglichen Sachen gleichermaßen"
+    ],
+    correct: 1,
+    explanation: "§ 438 I Nr. 3 BGB sieht eine Verjährungsfrist von zwei Jahren vor, die nach § 438 II BGB mit Ablieferung der Sache beginnt – abweichend von der allgemeinen Regelverjährung des § 195 BGB (3 Jahre ab Kenntnis). Für Bauwerke gilt die Sonderregel des § 438 I Nr. 2 BGB (5 Jahre)."
+  },
+  {
+    le: 1,
+    case: "Beim Verbrauchsgüterkauf zeigt sich 11 Monate nach der Übergabe ein Defekt. Der Verkäufer behauptet, die Sache sei bei Übergabe mangelfrei gewesen.",
+    question: "Auf wen liegt nach § 477 BGB die Beweislast?",
+    options: [
+      "Der Käufer muss den Mangel und dessen Vorliegen bei Übergabe beweisen",
+      "Es wird zugunsten des Käufers vermutet, dass der Mangel bei Gefahrübergang vorlag – der Verkäufer muss die Vermutung widerlegen",
+      "Das Gericht muss einen Sachverständigen beauftragen, ohne dass eine Partei Beweis führen muss",
+      "Nach mehr als 6 Monaten trägt immer der Käufer die Beweislast"
+    ],
+    correct: 1,
+    explanation: "§ 477 I BGB stellt beim Verbrauchsgüterkauf eine Beweislastumkehr zugunsten des Käufers auf: Zeigt sich ein Mangel innerhalb eines Jahres, wird vermutet, er habe bei Gefahrübergang vorgelegen. Es obliegt dem Verkäufer/Unternehmer, diese Vermutung zu widerlegen."
+  },
+
+  // ===== LERNEINHEIT 2 =====
+  {
+    le: 2,
+    case: "K hat von V ein Notebook gekauft, das ständig abstürzt. Nach zweimaligem erfolglosen Reparaturversuch will K vom Kaufvertrag zurücktreten.",
+    question: "Was ist die korrekte Anspruchsgrundlage für die Rückzahlung des Kaufpreises?",
+    options: [
+      "§§ 437 Nr. 2, 323 BGB allein",
+      "§§ 437 Nr. 2, 440, 323, 346 I BGB",
+      "§ 346 I BGB allein",
+      "§§ 437 Nr. 3, 280 I BGB"
+    ],
+    correct: 1,
+    explanation: "Beim Rücktritt wegen Mängeln ist die vollständige Paragraphenkette zu nennen: §§ 437 Nr. 2, 440, 323, 346 I BGB. § 346 I BGB ist dabei die Norm, die die begehrte Rechtsfolge (Rückgewähr des Kaufpreises) hergibt. § 440 BGB enthält Sonderregeln für den Fehlschlag der Nacherfüllung."
+  },
+  {
+    le: 2,
+    case: "K hat einen neuen Jaguar für 75.000 € gekauft. Geliefert wird er ohne den bestellten zweiten Zigarrenanzünder im Fond (Aufpreis: 199 €). Der Mangel lässt sich nicht nachrüsten.",
+    question: "Kann K wegen § 323 V S. 2 BGB zurücktreten?",
+    options: [
+      "Ja, weil ein Mangel vorliegt und K Nacherfüllung verlangt hat",
+      "Nein – der Mangel ist unerheblich (199 € von 75.000 €), sodass das Rücktrittsrecht nach § 323 V S. 2 BGB ausgeschlossen ist",
+      "Ja, weil Nacherfüllung unmöglich ist",
+      "Nein, weil es sich um einen Neuwagen handelt"
+    ],
+    correct: 1,
+    explanation: "§ 323 V S. 2 BGB schließt den Rücktritt aus, wenn die Pflichtverletzung unerheblich ist. Der BGH nimmt Erheblichkeit an, wenn die Reparaturkosten 5 % des Kaufpreises übersteigen. Hier: 199 € vs. 75.000 € – eindeutig unerheblich."
+  },
+  {
+    le: 2,
+    case: "K kauft einen Jaguar für 75.000 €, ohne bestellten Zigarrenanzünder (199 €, nicht nachrüstbar) – Rücktritt ist ausgeschlossen.",
+    question: "Welches Recht steht K dennoch zu?",
+    options: [
+      "Schadensersatz statt der ganzen Leistung",
+      "Minderung des Kaufpreises nach §§ 437 Nr. 2, 441 BGB – die Minderung ist auch bei unerheblichem Mangel möglich",
+      "Kein Recht, da der Mangel unerheblich ist",
+      "Nur Nacherfüllung, aber die ist hier unmöglich"
+    ],
+    correct: 1,
+    explanation: "Anders als der Rücktritt ist die Minderung nach § 441 I S. 2 BGB nicht durch die Unerheblichkeit des Mangels ausgeschlossen. K kann also trotz unerheblichem Mangel den Kaufpreis proportional mindern."
+  },
+  {
+    le: 2,
+    case: "K hat einen mangelhaften Druckkessel von H gekauft. Der Kessel explodiert und zerstört dabei andere Maschinen in K's Fabrik.",
+    question: "Wie sind die Schäden rechtlich zu unterscheiden?",
+    options: [
+      "Beides ist Mangelschaden nach §§ 437 Nr. 3, 280 I, III, 281 BGB",
+      "Schaden am Kessel = Mangelschaden (§§ 437 Nr. 3, 280 I, III, 281 BGB); Schaden an anderen Maschinen = Mangelfolgeschaden (§§ 437 Nr. 3, 280 I BGB ohne § 281)",
+      "Beides ist Mangelfolgeschaden nach §§ 437 Nr. 3, 280 I BGB",
+      "Der Schaden an den Maschinen ist nur aus Deliktsrecht (§ 823 BGB) zu ersetzen"
+    ],
+    correct: 1,
+    explanation: "Der Mangelschaden betrifft den Schaden an der Kaufsache selbst (→ §§ 437 Nr. 3, 280 I, III, 281 BGB, Fristsetzung erforderlich). Der Mangelfolgeschaden betrifft Schäden an anderen Rechtsgütern infolge des Mangels (→ §§ 437 Nr. 3, 280 I BGB, keine Fristsetzung nötig)."
+  },
+  {
+    le: 2,
+    case: "K kauft von Händler V (Unternehmer) einen Gebrauchtwagen für private Zwecke (§ 474 I BGB – Verbrauchsgüterkauf). V möchte die Verjährungsfrist von 2 Jahren auf 1 Jahr verkürzen.",
+    question: "Ist das möglich?",
+    options: [
+      "Nein, beim Verbrauchsgüterkauf kann gar keine Abweichung vereinbart werden",
+      "Ja, bei gebrauchten Sachen kann die Verjährungsfrist durch Vereinbarung auf 1 Jahr verkürzt werden (§ 476 II BGB)",
+      "Ja, durch AGB kann auf 6 Monate verkürzt werden",
+      "Ja, eine Verkürzung ist unbegrenzt möglich"
+    ],
+    correct: 1,
+    explanation: "§ 476 II BGB erlaubt beim Verbrauchsgüterkauf eine Verkürzung der Verjährungsfrist auf ein Jahr – aber nur bei gebrauchten Sachen. Bei neuen Sachen ist eine Verkürzung nicht möglich (§ 476 I BGB: Abweichungsverbot zu Lasten des Verbrauchers)."
+  },
+  {
+    le: 2,
+    case: "K (Verbraucher) kauft eine Spielekonsole bei V (Unternehmer). Die Konsole funktioniert ohne ihr Betriebssystem nicht. Nach 18 Monaten schlägt ein Softwareupdate fehl.",
+    question: "Was gilt für die Mängelvermutung beim digitalen Element?",
+    options: [
+      "§ 477 I BGB – Mängelvermutung für 1 Jahr",
+      "§ 477 II BGB – Mängelvermutung für 2 Jahre bei Waren mit digitalen Elementen",
+      "Keine Vermutung – der Käufer muss den Mangel vollständig beweisen",
+      "§ 475e BGB – besondere Verjährungsablaufhemmung"
+    ],
+    correct: 1,
+    explanation: "§ 477 II BGB sieht beim Kauf von Waren mit digitalen Elementen eine besonders großzügige Mängelvermutung vor: Die Beweislastumkehr zugunsten des Verbrauchers gilt für zwei Jahre (statt einem Jahr bei normalen Waren)."
+  },
+  {
+    le: 2,
+    case: "K bestellt V als Einzigem gegenüber 50 Flaschen Champagner für seine Hochzeit nächsten Samstag. Als V erst am Dienstag danach liefern will, macht K Schadensersatz geltend.",
+    question: "Muss K eine Frist zur Nacherfüllung setzen?",
+    options: [
+      "Ja, ohne Fristsetzung kein Schadensersatz",
+      "Nein – besondere Umstände machen die Fristsetzung entbehrlich (§ 281 II, 2. Alt. BGB), weil die Hochzeit bis dahin vorbei wäre",
+      "Nein, weil es sich um einen Verbrauchsgüterkauf handelt",
+      "Ja, aber eine Frist von einer Stunde reicht"
+    ],
+    correct: 1,
+    explanation: "§ 281 II, 2. Alt. BGB erklärt die Fristsetzung für entbehrlich, wenn besondere Umstände eine sofortige Leistung erfordern und eine Fristsetzung sinnlos wäre. Die Champagner für eine Hochzeit müssen rechtzeitig vorliegen – eine Frist nach dem Hochzeitstermin macht keinen Sinn."
+  },
+  {
+    le: 2,
+    case: "Gefahrübergang: K kauft bei V ein Fahrrad. Auf dem Weg nach Hause wird das Fahrrad durch einen Blitz zerstört – reiner Zufallsschaden.",
+    question: "Wer trägt nach §§ 446, 433 BGB das Risiko des zufälligen Untergangs nach der Übergabe?",
+    options: [
+      "V, weil er noch Eigentümer ist bis K zahlt",
+      "K – mit der Übergabe geht die Preisgefahr auf den Käufer über (§ 446 BGB)",
+      "Die Versicherung muss es tragen",
+      "K erst nach vollständiger Kaufpreiszahlung"
+    ],
+    correct: 1,
+    explanation: "§ 446 S. 1 BGB: Mit der Übergabe der Kaufsache geht die Preisgefahr auf den Käufer über. Ab Übergabe muss K den Kaufpreis zahlen, auch wenn die Sache zufällig untergeht – die Sache befindet sich in seiner Einflusssphäre."
+  },
+  {
+    le: 2,
+    case: "Versendungskauf: K bestellt online ein Buch bei Buchhändler V (Unternehmer). V schickt das Buch per Post. Auf dem Postweg wird das Paket gestohlen.",
+    question: "Wer trägt die Gefahr, wenn K Verbraucher ist?",
+    options: [
+      "K – weil er den Versandweg gewählt hat (§ 447 BGB)",
+      "V – beim Verbrauchsgüterkauf gilt § 447 BGB grundsätzlich nicht (§ 475 II BGB); die Gefahr geht erst mit tatsächlicher Übergabe über",
+      "Der Paketdienstleister trägt das Risiko",
+      "K, wenn er die Versicherung des Pakets nicht beauftragt hat"
+    ],
+    correct: 1,
+    explanation: "§ 475 II BGB schließt die Anwendung von § 447 BGB beim Verbrauchsgüterkauf grundsätzlich aus. Der Gefahrübergang beim Versendungskauf gilt nicht für Verbraucher; die Preisgefahr geht erst mit tatsächlicher Übergabe auf K über. V (Unternehmer) trägt das Transportrisiko."
+  },
+  {
+    le: 2,
+    case: "Baumarkt V verkauft eine Bohrmaschine an Endkunden K. Lieferant L hat die fehlerhafte Bohrmaschine an V geliefert. K macht Gewährleistungsrechte bei V geltend.",
+    question: "Kann V seinerseits Regress bei L nehmen (§§ 445a, 478 BGB)?",
+    options: [
+      "Nein – Regress gibt es nur zwischen Verbraucher und Unternehmer",
+      "Ja – §§ 445a, 478 BGB ermöglichen den Unternehmerregress; V kann z.B. die Mängelvermutung des § 477 BGB auch gegenüber L geltend machen (§ 478 I BGB)",
+      "Nein, weil beide Unternehmer sind und § 477 BGB nur für Verbraucherverträge gilt",
+      "Nur wenn V dem L zuvor eine Frist zur Nacherfüllung gesetzt hat"
+    ],
+    correct: 1,
+    explanation: "§§ 445a, 478 BGB ermöglichen den Verkäuferregress: V kann von L sofort Rückzahlung verlangen (keine Fristsetzung nötig, § 445a II BGB) und sich auf § 477 BGB berufen (§ 478 I BGB), obwohl das Verhältnis V–L kein Verbrauchsgüterkauf ist."
+  },
+  {
+    le: 2,
+    case: "V hat eine mangelhafte Sache an K (Verbraucher) verkauft und musste diese zurücknehmen. V will nun Regress bei seinem Lieferanten L nehmen. Durch die Rücknahme ist die Verjährungsfrist des § 438 BGB bereits abgelaufen.",
+    question: "Was schützt V hier?",
+    options: [
+      "Nichts – V hat zu lange gewartet",
+      "§ 445b II BGB – Regressansprüche verjähren frühestens 2 Monate nach dem Zeitpunkt, in dem V die Ansprüche des Verbrauchers erfüllt hat",
+      "§ 199 BGB – die allgemeine Verjährung beginnt erst mit Kenntnis",
+      "§ 478 II BGB – L kann keine Einreden erheben"
+    ],
+    correct: 1,
+    explanation: "§ 445b II BGB schützt den Verkäufer vor der sog. 'Regress-Falle': Die Verjährung seiner Regressansprüche gegen den Lieferanten läuft frühestens zwei Monate nach dem Zeitpunkt ab, in dem der Unternehmer die Ansprüche des Verbrauchers erfüllt hat."
+  },
+  {
+    le: 2,
+    case: "A möchte sein Grundstück eines Tages verkaufen. Damit sein Freund B das Grundstück bevorzugt erwerben kann, räumt A dem B ein Vorkaufsrecht ein.",
+    question: "Was gewährt ein Vorkaufsrecht nach § 463 BGB?",
+    options: [
+      "B das Recht, das Grundstück zum selbst bestimmten Preis zu kaufen",
+      "B das Recht, beim Verkauf an einen Dritten zu denselben Bedingungen in den Kaufvertrag einzutreten",
+      "B das Recht, A jederzeit zum Verkauf zu zwingen",
+      "B ein Dauernutzungsrecht am Grundstück"
+    ],
+    correct: 1,
+    explanation: "Das Vorkaufsrecht nach § 463 BGB gibt dem Berechtigten das Recht, beim Verkauf der Sache an einen Dritten zu denselben Bedingungen (wie mit dem Dritten vereinbart) in den Kaufvertrag einzutreten. B kann also den Kauf zu den mit dem Dritten ausgehandelten Konditionen übernehmen."
+  },
+  {
+    le: 2,
+    case: "K hat nach erklärter Minderung nun Schadensersatz statt der ganzen Leistung nach §§ 437 Nr. 3, 280 I, III, 281 BGB verlangt.",
+    question: "Ist dieses Vorgehen nach h.M. zulässig?",
+    options: [
+      "Ja, § 325 BGB erlaubt die gleichzeitige Geltendmachung von Rücktritt und Schadensersatz",
+      "Nein – nach h.M. kann K nach erklärter Minderung nicht mehr zum Schadensersatz statt der ganzen Leistung wechseln, weil Minderung und Rücktritt in einem Alternativverhältnis stehen (§ 437 Nr. 2 BGB)",
+      "Ja, wenn der Mangel nach der Minderungserklärung schlimmer wird",
+      "Nein, Schadensersatz ist grundsätzlich ausgeschlossen"
+    ],
+    correct: 1,
+    explanation: "Nach h.M. kann K nach erklärter Minderung nicht mehr zum Schadensersatz statt der ganzen Leistung wechseln. § 437 Nr. 2 BGB stellt Minderung und Rücktritt in ein Alternativverhältnis; durch den Schadensersatz statt der ganzen Leistung würde K de facto die Bindung an die Minderung umgehen."
+  },
+  {
+    le: 2,
+    case: "K kaufte von einem Autohändler V einen Pkw. V trat dabei als Vertreter des Vorbesitzers A auf (Agenturvertragsmodell). V hat sich von A einen Mindesterlös von 8.000 € garantieren lassen.",
+    question: "Gelten die Verbrauchsgüterkaufregeln der §§ 474 ff. BGB?",
+    options: [
+      "Nein – rechtlicher Verkäufer ist A (Privatperson), kein Unternehmer",
+      "Ja – weil V wirtschaftlich als Verkäufer anzusehen ist (er trägt das Risiko über den garantierten Mindesterlös hinaus), liegt ein Verbrauchsgüterkauf vor",
+      "Nein – das Agenturmodell ist stets wirksam",
+      "Ja, aber nur wenn V direkt im Kaufvertrag als Verkäufer erscheint"
+    ],
+    correct: 1,
+    explanation: "Nach h.M. ist ein Umgehungsversuch über das Agenturvertragsmodell unwirksam, wenn der Händler (V) wirtschaftlich als Verkäufer anzusehen ist. Das ist der Fall, wenn V sich einen Mindesterlös hat garantieren lassen – er trägt das wirtschaftliche Risiko, daher gelten §§ 474 ff. BGB."
+  },
+  {
+    le: 2,
+    case: "V verkauft K ein Softwarepaket auf DVD. Das Programm enthält keine Hardware.",
+    question: "Welches Gewährleistungsrecht gilt?",
+    options: [
+      "§§ 434 ff. BGB, weil auf einem körperlichen Datenträger verkauft",
+      "§§ 327a ff. BGB (Verträge über digitale Produkte), weil digitale Inhalte auch auf körperlichem Datenträger unter §§ 327 ff. BGB fallen (§ 327 V BGB i.V.m. § 475a I BGB)",
+      "§§ 631 ff. BGB (Werkvertragsrecht)",
+      "Das Urheberrecht regelt diese Fragen abschließend"
+    ],
+    correct: 1,
+    explanation: "§ 327 V BGB stellt klar, dass die Vorschriften über Verträge über digitale Produkte auch dann gelten, wenn digitale Inhalte auf einem körperlichen Datenträger bereitgestellt werden. Für Software-DVDs gelten daher §§ 327a ff. BGB i.V.m. dem Verweis aus § 475a I BGB."
+  },
+  {
+    le: 2,
+    case: "Beim Verbrauchsgüterkauf über ein Smartphone (Ware mit digitalem Element) zeigt sich nach 20 Monaten ein Displayfehler.",
+    question: "Greift die Beweislastumkehr des § 477 BGB noch?",
+    options: [
+      "Nein – § 477 I BGB gilt nur für 1 Jahr",
+      "Ja – § 477 II BGB verlängert die Mängelvermutung beim Kauf von Waren mit digitalen Elementen auf 2 Jahre",
+      "Nein – ein Displaydefekt ist kein digitaler Mangel",
+      "Ja, aber nur wenn der Defekt eindeutig am digitalen Element liegt"
+    ],
+    correct: 1,
+    explanation: "§ 477 II BGB: Bei Waren mit digitalen Elementen gilt die Mängelvermutung zugunsten des Verbrauchers für zwei Jahre (statt einem Jahr nach § 477 I BGB). Das Smartphone ist eine solche Ware – die Vermutung greift also noch bei 20 Monaten."
+  },
+  {
+    le: 2,
+    case: "K kauft ein Auto für 30.000 €. Nach der Lieferung stellt er fest, dass ein kleiner Kratzer auf der Motorhaube vorhanden ist. Die Reparatur würde 200 € kosten.",
+    question: "Kann K wegen des Kratzers vom Kaufvertrag zurücktreten?",
+    options: [
+      "Ja, jeder Mangel berechtigt zum Rücktritt",
+      "Nein – der Kratzer ist unerheblich (200 € von 30.000 € = 0,67 %, unter der 5%-Grenze des BGH), sodass der Rücktritt nach § 323 V S. 2 BGB ausgeschlossen ist",
+      "Ja, weil Kratzer objektive Anforderungen verletzen",
+      "Nein, weil K keine Frist gesetzt hat"
+    ],
+    correct: 1,
+    explanation: "§ 323 V S. 2 BGB schließt den Rücktritt bei unerheblicher Pflichtverletzung aus. Der BGH legt die Grenze bei 5 % des Kaufpreises. 200 € Reparaturkosten bei 30.000 € Kaufpreis entsprechen ca. 0,67 % – unerheblich, kein Rücktrittsrecht."
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+let answers = [];
+let answered = false;
+let le1Score = 0, le2Score = 0;
+
+function startQuiz() {
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[currentQ];
+  document.getElementById('btn-next').disabled = true;
+
+  // Badge
+  const badge = document.getElementById('q-badge');
+  badge.textContent = 'LE ' + q.le;
+  badge.className = 'badge' + (q.le === 2 ? ' le2' : '');
+
+  // Question
+  document.getElementById('q-text').textContent = q.question;
+
+  // Case
+  const caseBox = document.getElementById('q-case');
+  if (q.case) {
+    caseBox.style.display = 'block';
+    caseBox.textContent = '📋 Sachverhalt: ' + q.case;
+  } else {
+    caseBox.style.display = 'none';
+  }
+
+  // Options
+  const optDiv = document.getElementById('q-options');
+  optDiv.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = '<strong>' + String.fromCharCode(65+i) + ')</strong> ' + opt;
+    btn.onclick = () => selectAnswer(i);
+    optDiv.appendChild(btn);
+  });
+
+  // Feedback
+  const fb = document.getElementById('q-feedback');
+  fb.style.display = 'none';
+  fb.className = 'feedback';
+  fb.textContent = '';
+
+  // Counter
+  document.getElementById('q-counter').textContent = 'Frage ' + (currentQ + 1) + ' von ' + questions.length;
+
+  // Progress
+  updateProgress();
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+
+  const q = questions[currentQ];
+  const opts = document.getElementById('q-options').children;
+  const isCorrect = idx === q.correct;
+
+  for (let i = 0; i < opts.length; i++) {
+    opts[i].classList.add('disabled');
+    if (i === q.correct) opts[i].classList.add('correct');
+    if (i === idx && !isCorrect) opts[i].classList.add('wrong');
+  }
+
+  const fb = document.getElementById('q-feedback');
+  fb.style.display = 'block';
+  if (isCorrect) {
+    score++;
+    if (q.le === 1) le1Score++; else le2Score++;
+    fb.className = 'feedback correct-fb';
+    fb.innerHTML = '✅ <strong>Richtig!</strong> ' + q.explanation;
+  } else {
+    fb.className = 'feedback wrong-fb';
+    fb.innerHTML = '❌ <strong>Falsch.</strong> Die richtige Antwort war <strong>' + String.fromCharCode(65 + q.correct) + ')</strong>. ' + q.explanation;
+  }
+
+  answers.push({ q: currentQ, selected: idx, correct: isCorrect });
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-next').textContent = currentQ < questions.length - 1 ? 'Weiter →' : 'Auswertung anzeigen';
+}
+
+function nextQuestion() {
+  if (!answered) return;
+  currentQ++;
+  if (currentQ < questions.length) {
+    renderQuestion();
+  } else {
+    showScore();
+  }
+}
+
+function updateProgress() {
+  const pct = (currentQ / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = currentQ + ' / ' + questions.length + ' Fragen';
+}
+
+function showScore() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('score-screen').style.display = 'block';
+  document.getElementById('progress-bar').style.width = '100%';
+  document.getElementById('progress-label').textContent = questions.length + ' / ' + questions.length + ' Fragen';
+
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  document.getElementById('score-display').textContent = score + ' / ' + total;
+  document.getElementById('score-pct').textContent = pct + ' % korrekte Antworten';
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent = total - score;
+
+  const le1Total = questions.filter(q => q.le === 1).length;
+  const le2Total = questions.filter(q => q.le === 2).length;
+  document.getElementById('s-le1').textContent = le1Score + '/' + le1Total;
+  document.getElementById('s-le2').textContent = le2Score + '/' + le2Total;
+
+  const grade = document.getElementById('grade-badge');
+  if (pct >= 90) { grade.textContent = '🏆 Ausgezeichnet!'; grade.style.background = '#d5f5e3'; grade.style.color = '#1e8449'; }
+  else if (pct >= 75) { grade.textContent = '👍 Gut!'; grade.style.background = '#d6eaf8'; grade.style.color = '#1a5276'; }
+  else if (pct >= 55) { grade.textContent = '📖 Noch üben!'; grade.style.background = '#fef9e7'; grade.style.color = '#7d6608'; }
+  else { grade.textContent = '💪 Wiederholen!'; grade.style.background = '#fdedec'; grade.style.color = '#922b21'; }
+}
+
+function showReview() {
+  document.getElementById('score-screen').style.display = 'none';
+  document.getElementById('review-screen').style.display = 'block';
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+
+  answers.forEach(a => {
+    const q = questions[a.q];
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (a.correct ? 'r-correct' : 'r-wrong');
+    let html = '<div class="review-q">' + (a.q + 1) + '. ' + q.question + '</div>';
+    if (q.case) html += '<div class="review-case">' + q.case + '</div>';
+    const icon = a.correct ? '✅' : '❌';
+    html += '<div class="review-ans">' + icon + ' Ihre Antwort: <span>' + String.fromCharCode(65+a.selected) + ') ' + q.options[a.selected] + '</span></div>';
+    if (!a.correct) html += '<div class="review-ans">✅ Richtige Antwort: <span>' + String.fromCharCode(65+q.correct) + ') ' + q.options[q.correct] + '</span></div>';
+    html += '<div class="review-exp">' + q.explanation + '</div>';
+    div.innerHTML = html;
+    list.appendChild(div);
+  });
+}
+
+function restartQuiz() {
+  currentQ = 0; score = 0; answers = []; answered = false; le1Score = 0; le2Score = 0;
+  document.getElementById('score-screen').style.display = 'none';
+  document.getElementById('review-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('intro-screen').style.display = 'block';
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('progress-label').textContent = '0 / ' + questions.length + ' Fragen';
+}
+</script>
+</body>
+</html>
